@@ -17,6 +17,7 @@ import 'widgets/latest_measurement_card.dart';
 import 'services/measurement_events.dart';
 import 'widgets/history_dashboard.dart';
 import 'pages/results_page.dart';
+import 'services/session.dart';
 
 Future<void> main() async {
  // Ensure Flutter bindings are initialized before accessing cameras
@@ -30,8 +31,28 @@ Future<void> main() async {
 }
 
 class CameraTestApp extends StatefulWidget {
+
  final List<CameraDescription> cameras;
- const CameraTestApp({super.key, required this.cameras});
+
+ final String? userId;
+ final String? userName;
+ final bool isAdmin;
+
+
+ const CameraTestApp({
+
+ super.key,
+
+ required this.cameras,
+
+ this.userId,
+
+ this.userName,
+
+ this.isAdmin = false,
+
+ });
+
 
 
 
@@ -49,6 +70,13 @@ class _CameraTestAppState extends State<CameraTestApp> {
  double _lastHRV = 0;
  final StatisticsService statisticsService =
     StatisticsService();
+
+ String? get currentUserId =>
+    widget.userId;
+
+
+ String? get currentUserName =>
+    widget.userName;
 
  CameraController? _controller;
  bool _isRecording = false;
@@ -822,6 +850,8 @@ double calculateFinalBPM(List<double> values) {
     _finalBpmHistory);
 
   Measurement measurement = Measurement(
+  userId: Session.currentUser!.id,
+  userName: Session.currentUser!.name,
   timestamp: DateTime.now(),
   heartRate: finalBPM,
   hrvRmssd: hrv,

@@ -1,6 +1,10 @@
 import 'dart:convert';
 
 class Measurement {
+
+  final String userId;
+  final String userName;
+
   final String id;
   final DateTime timestamp;
   final double heartRate;
@@ -26,6 +30,8 @@ class Measurement {
 
   Measurement({
     String? id,
+    required this.userId,
+    required this.userName,
     required this.timestamp,
     required this.heartRate,
 
@@ -51,6 +57,8 @@ class Measurement {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'user_id': userId,
+        'user_name': userName,
         'timestamp': timestamp.toIso8601String(),
         'heart_rate': heartRate,
         'hrv_rmssd': hrvRmssd,
@@ -72,6 +80,8 @@ class Measurement {
   factory Measurement.fromJson(Map<String, dynamic> json) {
     return Measurement(
       id: json['id'],
+      userId: json['user_id'] ?? '',
+      userName: json['user_name'] ?? '',
       timestamp: DateTime.parse(json['timestamp']),
       heartRate: (json['heart_rate'] ?? 0).toDouble(),
       hrvRmssd: (json['hrv_rmssd'] ?? 0).toDouble(),

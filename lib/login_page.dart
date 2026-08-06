@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'instructions_page.dart';
+import 'models/user.dart';
+import 'services/session.dart';
+import 'student_dashboard.dart';
+import 'admin_dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -41,12 +44,68 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     super.dispose();
   }
 
-  void _navigateToInstructions() {
-    // Navigate to instructions and remove login page from the backstack
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const InstructionsPage()),
-    );
+  void _studentLogin(){
+
+  final user = User(
+
+  id:
+  _studentIdController.text,
+
+  name:
+  "${_firstNameController.text} ${_lastNameController.text}",
+
+  role:
+  "student",
+
+  studentId:
+  _studentIdController.text,
+
+  email:
+  _studentEmailController.text,
+
+  );
+
+
+  Session.currentUser = user;
+
+
+  Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+  builder: (_) => const StudentDashboard(),
+  ),
+  );
+
+  }
+
+
+
+  void _adminLogin(){
+
+  final user = User(
+
+  id:
+  "admin001",
+
+  name:
+  _adminUsernameController.text,
+
+  role:
+  "admin",
+
+  );
+
+
+  Session.currentUser = user;
+
+
+  Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+  builder: (_) => const AdminDashboard(),
+  ),
+  );
+
   }
 
   @override
@@ -90,7 +149,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           TextField(controller: _studentPasswordController, obscureText: true, decoration: const InputDecoration(labelText: "Password", border: OutlineInputBorder())),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: _navigateToInstructions,
+            onPressed: _studentLogin,
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), backgroundColor: Colors.blue),
             child: const Text("Proceed to Instructions", style: TextStyle(fontSize: 16)),
           ),
@@ -112,7 +171,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           TextField(controller: _adminPasswordController, obscureText: true, decoration: const InputDecoration(labelText: "Admin Password", border: OutlineInputBorder())),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: _navigateToInstructions,
+            onPressed: _adminLogin,
             style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), backgroundColor: Colors.purple),
             child: const Text("Admin Sign In", style: TextStyle(fontSize: 16)),
           ),

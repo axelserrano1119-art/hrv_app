@@ -28,10 +28,7 @@ class HrvService {
 
     double milliseconds =
         seconds * 1000;
-
-
-    // Fix #1:
-    // Reject impossible human RR intervals
+        
     if (milliseconds >= 300 &&
         milliseconds <= 2000) {
 
@@ -41,17 +38,50 @@ class HrvService {
   }
 
 
-  // Fix #2:
-  // Remove sudden beat-to-beat artifacts
+  if (rrIntervals.length < 5) {
+    return [];
+  }
 
+
+  // Remove RR artifacts
   List<double> cleanIntervals = [];
 
-  for (double rr in rrIntervals) {
+  for(double rr in rrIntervals){
 
-  if (rr >= 400 && rr <= 1500) {
+    // physiological limits
+    if(rr < 500 || rr > 1400){
+      continue;
+    }
+
+
+    // first interval accepted
+    if(cleanIntervals.isEmpty){
+      cleanIntervals.add(rr);
+      continue;
+    }
+
+
+    // median-based artifact rejection
+    List<double> temp =
+        List.from(cleanIntervals)..sort();
+
+
+    double median =
+        temp[temp.length ~/ 2];
+
+
+    double difference =
+        ((rr - median).abs()) / median;
+
+
+    // reject sudden beat changes
+    if(difference > 0.15){
+      continue;
+    }
+
+
     cleanIntervals.add(rr);
   }
-}
 debugPrint(
   "HRV CLEAN RR: ${cleanIntervals.length}"
 );

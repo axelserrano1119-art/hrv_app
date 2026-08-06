@@ -13,6 +13,9 @@ class MeasurementStorage {
       "measurements.json";
 
 
+  // ==========================================
+  // GET STORAGE FILE
+  // ==========================================
 
   Future<File> _getFile() async {
 
@@ -22,12 +25,13 @@ class MeasurementStorage {
     return File(
       "${directory.path}/$fileName",
     );
-
   }
 
 
 
-
+  // ==========================================
+  // SAVE MEASUREMENT
+  // ==========================================
 
   Future<void> saveMeasurement(
       Measurement measurement) async {
@@ -46,16 +50,11 @@ class MeasurementStorage {
 
 
 
-    debugPrint(
-      "Total saved measurements: "
-      "${measurements.length}",
-    );
-
-
-
     final jsonList =
         measurements
-            .map((e) => e.toJson())
+            .map(
+              (e) => e.toJson(),
+            )
             .toList();
 
 
@@ -69,28 +68,9 @@ class MeasurementStorage {
       "Measurement saved successfully",
     );
 
-  }
-
-
-
-
-
-
-  Future<void> clearMeasurements() async {
-
-    final file =
-        await _getFile();
-
-
-    if (await file.exists()) {
-
-      await file.delete();
-
-      debugPrint(
-        "All measurements cleared",
-      );
-
-    }
+    debugPrint(
+      "Total measurements: ${measurements.length}",
+    );
 
   }
 
@@ -98,9 +78,12 @@ class MeasurementStorage {
 
 
 
+  // ==========================================
+  // LOAD ALL MEASUREMENTS
+  // ==========================================
 
   Future<List<Measurement>>
-      loadMeasurements() async {
+  loadMeasurements() async {
 
 
     final file =
@@ -108,7 +91,7 @@ class MeasurementStorage {
 
 
 
-    if (!await file.exists()) {
+    if(!await file.exists()){
 
       return [];
 
@@ -121,7 +104,7 @@ class MeasurementStorage {
 
 
 
-    if (contents.isEmpty) {
+    if(contents.isEmpty){
 
       return [];
 
@@ -136,7 +119,7 @@ class MeasurementStorage {
 
     return decoded
         .map(
-          (item) =>
+          (item)=>
               Measurement.fromJson(item),
         )
         .toList();
@@ -147,9 +130,12 @@ class MeasurementStorage {
 
 
 
+  // ==========================================
+  // GET MOST RECENT MEASUREMENT
+  // ==========================================
 
   Future<Measurement?>
-      getLatestMeasurement() async {
+  getLatestMeasurement() async {
 
 
     final measurements =
@@ -157,7 +143,7 @@ class MeasurementStorage {
 
 
 
-    if (measurements.isEmpty) {
+    if(measurements.isEmpty){
 
       return null;
 
@@ -166,7 +152,7 @@ class MeasurementStorage {
 
 
     measurements.sort(
-      (a,b) =>
+      (a,b)=>
           b.timestamp
           .compareTo(a.timestamp),
     );
@@ -181,10 +167,53 @@ class MeasurementStorage {
 
 
 
+  // ==========================================
+  // DELETE ALL DATA
+  // ==========================================
+
+  Future<void>
+  clearMeasurements() async {
+
+
+    final file =
+        await _getFile();
+
+
+
+    if(await file.exists()){
+
+      await file.delete();
+
+
+      debugPrint(
+        "All measurements cleared",
+      );
+
+    }
+
+  }
+
+
+
+
+  Future<void>
+  deleteAllMeasurements() async {
+
+    await clearMeasurements();
+
+  }
+
+
+
+
+
+  // ==========================================
+  // GENERAL USER STATISTICS
+  // ==========================================
 
 
   Future<double>
-      getAverageHeartRate() async {
+  getAverageHeartRate() async {
 
 
     final measurements =
@@ -192,7 +221,7 @@ class MeasurementStorage {
 
 
 
-    if (measurements.isEmpty) {
+    if(measurements.isEmpty){
 
       return 0;
 
@@ -203,7 +232,8 @@ class MeasurementStorage {
     double total = 0;
 
 
-    for (var m in measurements) {
+
+    for(var m in measurements){
 
       total += m.heartRate;
 
@@ -211,19 +241,16 @@ class MeasurementStorage {
 
 
 
-    return total / measurements.length;
+    return total /
+        measurements.length;
 
   }
 
 
 
 
-
-
-
-
   Future<double>
-      getAverageHRV() async {
+  getAverageHRV() async {
 
 
     final measurements =
@@ -231,7 +258,7 @@ class MeasurementStorage {
 
 
 
-    if (measurements.isEmpty) {
+    if(measurements.isEmpty){
 
       return 0;
 
@@ -242,7 +269,8 @@ class MeasurementStorage {
     double total = 0;
 
 
-    for (var m in measurements) {
+
+    for(var m in measurements){
 
       total += m.hrvRmssd;
 
@@ -250,7 +278,8 @@ class MeasurementStorage {
 
 
 
-    return total / measurements.length;
+    return total /
+        measurements.length;
 
   }
 
@@ -258,12 +287,211 @@ class MeasurementStorage {
 
 
 
+  // ==========================================
+  // ADMIN FUNCTIONS
+  // ==========================================
 
-  Future<void>
-      deleteAllMeasurements() async {
 
 
-    await clearMeasurements();
+  // Get all measurements from one student
+
+  Future<List<Measurement>>
+  getMeasurementsForUser(
+      String userId
+  ) async {
+
+
+    final measurements =
+        await loadMeasurements();
+
+
+
+    return measurements
+        .where(
+          (m)=>
+              m.userId == userId,
+        )
+        .toList();
+
+  }
+
+
+
+
+
+  // Get all students registered
+
+  Future<List<String>>
+  getStudentNames() async {
+
+
+    final measurements =
+        await loadMeasurements();
+
+
+
+    final names =
+        measurements
+            .map(
+              (m)=>
+                  m.userName ?? "Unknown",
+            )
+            .toSet()
+            .toList();
+
+
+
+    return names;
+
+  }
+
+
+
+
+
+  // Get all unique student IDs
+
+  Future<List<String>>
+  getStudentIDs() async {
+
+
+    final measurements =
+        await loadMeasurements();
+
+
+
+    final ids =
+        measurements
+            .map(
+              (m)=>
+                  m.userId ?? "",
+            )
+            .where(
+              (id)=>id.isNotEmpty,
+            )
+            .toSet()
+            .toList();
+
+
+
+    return ids;
+
+  }
+
+
+
+
+
+  // Student average HR
+
+  Future<double>
+  getUserAverageHR(
+      String userId
+  ) async {
+
+
+    final data =
+        await getMeasurementsForUser(
+          userId,
+        );
+
+
+
+    if(data.isEmpty){
+
+      return 0;
+
+    }
+
+
+
+    double total = 0;
+
+
+
+    for(var m in data){
+
+      total += m.heartRate;
+
+    }
+
+
+
+    return total /
+        data.length;
+
+  }
+
+
+
+
+
+  // Student average HRV
+
+  Future<double>
+  getUserAverageHRV(
+      String userId
+  ) async {
+
+
+    final data =
+        await getMeasurementsForUser(
+          userId,
+        );
+
+
+
+    if(data.isEmpty){
+
+      return 0;
+
+    }
+
+
+
+    double total = 0;
+
+
+
+    for(var m in data){
+
+      total += m.hrvRmssd;
+
+    }
+
+
+
+    return total /
+        data.length;
+
+  }
+
+
+
+
+
+  // Get student history for graphs
+
+  Future<List<Measurement>>
+  getStudentHistory(
+      String userId
+  ) async {
+
+
+    final data =
+        await getMeasurementsForUser(
+          userId,
+        );
+
+
+    data.sort(
+      (a,b)=>
+          a.timestamp
+          .compareTo(b.timestamp),
+    );
+
+
+    return data;
 
   }
 
