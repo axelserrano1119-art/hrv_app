@@ -1,17 +1,33 @@
-# hrv_app
+# HRV App
 
-A new Flutter project.
+A cross-platform Flutter application for measuring heart rate and heart rate variability (HRV) using camera-based photoplethysmography (PPG).
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Real-time heart rate detection
+- HRV calculation using RMSSD
+- Camera-based PPG signal extraction
+- Signal quality monitoring
+- Measurement history storage
+- HR/Baseline trend visualization
 
-A few resources to get you started if this is your first Flutter project:
+## Technology
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Flutter / Dart
+- Camera API
+- PPG signal processing
+- RMSSD HRV analysis
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Project Structure
+
+lib/
+- models/
+- services/
+- pages/
+- main.dart
+
+## Running the App
+
+```bash
+flutter pub get
+flutter run
