@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'models/user.dart';
 import 'services/session.dart';
 import 'student_dashboard.dart';
-import 'admin_dashboard.dart';
+import 'screens/admin_dashboard_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   Navigator.pushReplacement(
   context,
   MaterialPageRoute(
-  builder: (_) => const AdminDashboard(),
+  builder: (_) => const AdminDashboardScreen(),
   ),
   );
 

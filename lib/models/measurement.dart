@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 class Measurement {
-
   final String userId;
   final String userName;
 
@@ -9,7 +8,6 @@ class Measurement {
   final DateTime timestamp;
   final double heartRate;
 
-  // Made optional so older code still compiles
   final double hrvRmssd;
 
   final double? hrvSdnn;
@@ -35,7 +33,6 @@ class Measurement {
     required this.timestamp,
     required this.heartRate,
 
-    // CHANGED HERE
     this.hrvRmssd = 0.0,
 
     this.hrvSdnn,
@@ -53,58 +50,127 @@ class Measurement {
     this.valid = true,
     this.durationSeconds = 45,
     this.notes,
-  }) : id = id ?? DateTime.now().millisecondsSinceEpoch.toString();
+  }) : id =
+          id ??
+          DateTime.now()
+              .millisecondsSinceEpoch
+              .toString();
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_id': userId,
-        'user_name': userName,
-        'timestamp': timestamp.toIso8601String(),
-        'heart_rate': heartRate,
-        'hrv_rmssd': hrvRmssd,
-        'hrv_sdnn': hrvSdnn,
-        'hrv_pnn50': hrvPnn50,
-        'hrv_sd1': hrvSd1,
-        'hrv_sd2': hrvSd2,
-        'lf_power': lfPower,
-        'hf_power': hfPower,
-        'lf_hf_ratio': lfhfRatio,
-        'rr_intervals': rrIntervals,
-        'bpm_history': bpmHistory,
-        'quality_score': qualityScore,
-        'valid': valid,
-        'duration_seconds': durationSeconds,
-        'notes': notes,
-      };
+  // ==========================================
+  // JSON
+  // ==========================================
 
-  factory Measurement.fromJson(Map<String, dynamic> json) {
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'user_name': userName,
+      'timestamp': timestamp.toIso8601String(),
+      'heart_rate': heartRate,
+      'hrv_rmssd': hrvRmssd,
+      'hrv_sdnn': hrvSdnn,
+      'hrv_pnn50': hrvPnn50,
+      'hrv_sd1': hrvSd1,
+      'hrv_sd2': hrvSd2,
+      'lf_power': lfPower,
+      'hf_power': hfPower,
+      'lf_hf_ratio': lfhfRatio,
+      'rr_intervals': rrIntervals,
+      'bpm_history': bpmHistory,
+      'quality_score': qualityScore,
+      'valid': valid,
+      'duration_seconds': durationSeconds,
+      'notes': notes,
+    };
+  }
+
+  // ==========================================
+  // JSON → MEASUREMENT
+  // ==========================================
+
+  factory Measurement.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return Measurement(
-      id: json['id'],
-      userId: json['user_id'] ?? '',
-      userName: json['user_name'] ?? '',
-      timestamp: DateTime.parse(json['timestamp']),
-      heartRate: (json['heart_rate'] ?? 0).toDouble(),
-      hrvRmssd: (json['hrv_rmssd'] ?? 0).toDouble(),
-      hrvSdnn: json['hrv_sdnn']?.toDouble(),
-      hrvPnn50: json['hrv_pnn50']?.toDouble(),
-      hrvSd1: json['hrv_sd1']?.toDouble(),
-      hrvSd2: json['hrv_sd2']?.toDouble(),
-      lfPower: json['lf_power']?.toDouble(),
-      hfPower: json['hf_power']?.toDouble(),
-      lfhfRatio: json['lf_hf_ratio']?.toDouble(),
+      id: json['id']?.toString(),
+
+      userId:
+          json['user_id']?.toString() ?? '',
+
+      userName:
+          json['user_name']?.toString() ?? '',
+
+      timestamp:
+          DateTime.parse(
+        json['timestamp'].toString(),
+      ),
+
+      heartRate:
+          (json['heart_rate'] ?? 0).toDouble(),
+
+      hrvRmssd:
+          (json['hrv_rmssd'] ?? 0).toDouble(),
+
+      hrvSdnn:
+          json['hrv_sdnn']?.toDouble(),
+
+      hrvPnn50:
+          json['hrv_pnn50']?.toDouble(),
+
+      hrvSd1:
+          json['hrv_sd1']?.toDouble(),
+
+      hrvSd2:
+          json['hrv_sd2']?.toDouble(),
+
+      lfPower:
+          json['lf_power']?.toDouble(),
+
+      hfPower:
+          json['hf_power']?.toDouble(),
+
+      lfhfRatio:
+          json['lf_hf_ratio']?.toDouble(),
+
       rrIntervals:
-          List<double>.from(json['rr_intervals'] ?? const []),
+          List<double>.from(
+        json['rr_intervals'] ?? const [],
+      ),
+
       bpmHistory:
-          List<double>.from(json['bpm_history'] ?? const []),
-      qualityScore: (json['quality_score'] ?? 0).toDouble(),
-      valid: json['valid'] ?? true,
-      durationSeconds: json['duration_seconds'] ?? 45,
-      notes: json['notes'],
+          List<double>.from(
+        json['bpm_history'] ?? const [],
+      ),
+
+      qualityScore:
+          (json['quality_score'] ?? 0).toDouble(),
+
+      valid:
+          json['valid'] ?? true,
+
+      durationSeconds:
+          json['duration_seconds'] ?? 45,
+
+      notes:
+          json['notes']?.toString(),
     );
   }
 
-  String encode() => jsonEncode(toJson());
+  // ==========================================
+  // STRING ENCODING
+  // ==========================================
 
-  static Measurement decode(String source) =>
-      Measurement.fromJson(jsonDecode(source));
+  String encode() {
+    return jsonEncode(
+      toJson(),
+    );
+  }
+
+  static Measurement decode(
+    String source,
+  ) {
+    return Measurement.fromJson(
+      jsonDecode(source),
+    );
+  }
 }

@@ -46,3 +46,10 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+lib.zip
+
+# Swift Package Manager generated files
+**/xcshareddata/swiftpm/
+
+# Swift Package Manager generated files
+**/xcshareddata/swiftpm/

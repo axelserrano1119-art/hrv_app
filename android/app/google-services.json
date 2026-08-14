@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "136471746939",
+    "project_id": "hrv-app-axel",
+    "storage_bucket": "hrv-app-axel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136471746939:android:cb616c917f7a81b169c5de",
+        "android_client_info": {
+          "package_name": "com.example.hrv_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQNcqlb1BgjnkIhH3AKFldmXMJtvwcH1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

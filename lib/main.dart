@@ -1,7 +1,10 @@
 // Please keep this version as the backend of the code as it is currently being tested for accuracy 
-// Try implementing a UI overlay that does not interfere with this original BGP code 
+// Try implementing a UI overlay that does not interfere with this original PPG code 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 import 'package:fl_chart/fl_chart.dart'; 
 import 'package:camera/camera.dart';
 import 'models/measurement.dart';
@@ -20,14 +23,20 @@ import 'pages/results_page.dart';
 import 'services/session.dart';
 
 Future<void> main() async {
- // Ensure Flutter bindings are initialized before accessing cameras
- WidgetsFlutterBinding.ensureInitialized();
- // Obtain a list of available cameras on the device
- final cameras = await availableCameras();
- runApp(MaterialApp(
-   theme: ThemeData.dark(),
-   home: const LoginPage()
- ));
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  final cameras = await availableCameras();
+
+  runApp(
+    MaterialApp(
+      theme: ThemeData.dark(),
+      home: const LoginPage(),
+    ),
+  );
 }
 
 class CameraTestApp extends StatefulWidget {
