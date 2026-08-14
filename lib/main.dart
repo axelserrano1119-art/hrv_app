@@ -21,6 +21,8 @@ import 'services/measurement_events.dart';
 import 'widgets/history_dashboard.dart';
 import 'pages/results_page.dart';
 import 'services/session.dart';
+import 'models/wellness_data.dart';
+import 'models/bio_factor.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +48,8 @@ class CameraTestApp extends StatefulWidget {
  final String? userId;
  final String? userName;
  final bool isAdmin;
+ final WellnessData? wellness;
+ final List<BioFactor> bioFactors;
 
 
  const CameraTestApp({
@@ -59,6 +63,10 @@ class CameraTestApp extends StatefulWidget {
  this.userName,
 
  this.isAdmin = false,
+
+ this.wellness, 
+
+ this.bioFactors = const [],
 
  });
 
@@ -868,6 +876,9 @@ double calculateFinalBPM(List<double> values) {
   bpmHistory: _finalBpmHistory,
   durationSeconds: 45,
   valid: true,
+
+  wellness: widget.wellness,
+  bioFactors: widget.bioFactors,
   );
 
   await MeasurementStorage()

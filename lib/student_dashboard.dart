@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'instructions_page.dart';
 import 'pages/history_page.dart';
+import 'pages/wellness_input_page.dart';
 
 
 class StudentDashboard extends StatelessWidget {
@@ -53,7 +54,9 @@ class StudentDashboard extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) =>
-                        const InstructionsPage(),
+                        const WellnessInputPage(
+                      isAdmin: false,
+                    ),
                   ),
                 );
 

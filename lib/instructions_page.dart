@@ -2,242 +2,156 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'main.dart';
 
-class InstructionsPage extends StatelessWidget {
+import 'models/wellness_data.dart';
+import 'models/bio_factor.dart';
 
+class InstructionsPage extends StatelessWidget {
   final String? userId;
   final String? userName;
   final bool isAdmin;
 
+  final WellnessData? wellness;
+  final List<BioFactor> bioFactors;
 
   const InstructionsPage({
     super.key,
     this.userId,
     this.userName,
     this.isAdmin = false,
+    this.wellness,
+    this.bioFactors = const [],
   });
 
-
-
-  Future<void> _startTest(BuildContext context) async {
-
-
+  Future<void> _startTest(
+    BuildContext context,
+  ) async {
     final cameras =
         await availableCameras();
 
-
-
-    if(context.mounted){
-
+    if (context.mounted) {
       Navigator.pushReplacement(
         context,
-
         MaterialPageRoute(
-          builder: (context)=>
-
+          builder: (context) =>
               CameraTestApp(
-
-                cameras: cameras,
-
-                userId: userId,
-
-                userName: userName,
-
-                isAdmin: isAdmin,
-
-              ),
-
+            cameras: cameras,
+            userId: userId,
+            userName: userName,
+            isAdmin: isAdmin,
+            wellness: wellness,
+            bioFactors: bioFactors,
+          ),
         ),
-
       );
-
     }
-
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          isAdmin
+              ? "Admin Test Instructions"
+              : "Test Instructions",
+        ),
+      ),
 
-      appBar:
-          AppBar(
-            title:
-              Text(
-                isAdmin
-                ? "Admin Test Instructions"
-                : "Test Instructions",
-              ),
-          ),
-
-
-
-      body:
-      Padding(
-
+      body: Padding(
         padding:
             const EdgeInsets.all(24),
 
-
-        child:
-        Column(
-
+        child: Column(
           mainAxisAlignment:
               MainAxisAlignment.center,
-
 
           crossAxisAlignment:
               CrossAxisAlignment.stretch,
 
-
-          children:[
-
-
-
+          children: [
             Icon(
-
               Icons.favorite_border,
-
-              size:80,
-
+              size: 80,
               color:
-              isAdmin
-              ? Colors.purple
-              : Colors.red,
-
+                  isAdmin
+                      ? Colors.purple
+                      : Colors.red,
             ),
 
-
-
-            const SizedBox(height:24),
-
-
+            const SizedBox(height: 24),
 
             Text(
-
               isAdmin
-              ? "Admin HRV Test"
-              : "How to take the HRV Test:",
-
+                  ? "Admin HRV Test"
+                  : "How to take the HRV Test:",
 
               style:
-              const TextStyle(
-
-                fontSize:22,
-
+                  const TextStyle(
+                fontSize: 22,
                 fontWeight:
                     FontWeight.bold,
-
               ),
-
 
               textAlign:
                   TextAlign.center,
-
             ),
 
-
-
-            const SizedBox(height:24),
-
-
-
+            const SizedBox(height: 24),
 
             const Text(
               "1. Ensure your index finger entirely covers the rear camera lens and flash.",
               style:
-              TextStyle(fontSize:16),
+                  TextStyle(fontSize: 16),
             ),
 
-
-
-            const SizedBox(height:12),
-
-
-
+            const SizedBox(height: 12),
 
             const Text(
               "2. Keep perfectly still and hold steady during the full 45-second countdown.",
               style:
-              TextStyle(fontSize:16),
+                  TextStyle(fontSize: 16),
             ),
 
-
-
-            const SizedBox(height:12),
-
-
-
+            const SizedBox(height: 12),
 
             const Text(
               "3. Read the real-time PPG signal on the graph to ensure stability.",
               style:
-              TextStyle(fontSize:16),
+                  TextStyle(fontSize: 16),
             ),
-
-
-
 
             const Spacer(),
 
-
-
-
             ElevatedButton(
-
               onPressed:
-                  ()=>_startTest(context),
-
+                  () => _startTest(context),
 
               style:
-              ElevatedButton.styleFrom(
-
+                  ElevatedButton.styleFrom(
                 padding:
-                const EdgeInsets.symmetric(
-                    vertical:16
+                    const EdgeInsets.symmetric(
+                  vertical: 16,
                 ),
-
-
                 backgroundColor:
-
-                isAdmin
-                ? Colors.purple
-                : Colors.green,
-
+                    isAdmin
+                        ? Colors.purple
+                        : Colors.green,
               ),
 
-
-
-              child:
-              Text(
-
+              child: Text(
                 isAdmin
-                ? "Start Admin Test"
-                : "I'm Ready, Start Test",
-
+                    ? "Start Admin Test"
+                    : "I'm Ready, Start Test",
 
                 style:
-                const TextStyle(
-                    fontSize:18
+                    const TextStyle(
+                  fontSize: 18,
                 ),
-
               ),
-
             ),
-
-
           ],
-
         ),
-
       ),
-
     );
-
   }
-
 }

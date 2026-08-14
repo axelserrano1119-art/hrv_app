@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'wellness_data.dart';
+import 'bio_factor.dart';
+
 class Measurement {
   final String userId;
   final String userName;
@@ -26,6 +29,10 @@ class Measurement {
   final int durationSeconds;
   final String? notes;
 
+  // NEW
+  final WellnessData? wellness;
+  final List<BioFactor> bioFactors;
+
   Measurement({
     String? id,
     required this.userId,
@@ -50,15 +57,14 @@ class Measurement {
     this.valid = true,
     this.durationSeconds = 45,
     this.notes,
+
+    this.wellness,
+    this.bioFactors = const [],
   }) : id =
           id ??
           DateTime.now()
               .millisecondsSinceEpoch
               .toString();
-
-  // ==========================================
-  // JSON
-  // ==========================================
 
   Map<String, dynamic> toJson() {
     return {
@@ -81,12 +87,13 @@ class Measurement {
       'valid': valid,
       'duration_seconds': durationSeconds,
       'notes': notes,
+
+      // NEW
+      'wellness': wellness?.toJson(),
+      'bio_factors':
+          bioFactors.map((factor) => factor.toJson()).toList(),
     };
   }
-
-  // ==========================================
-  // JSON → MEASUREMENT
-  // ==========================================
 
   factory Measurement.fromJson(
     Map<String, dynamic> json,
@@ -153,17 +160,30 @@ class Measurement {
 
       notes:
           json['notes']?.toString(),
+
+      wellness:
+          json['wellness'] != null
+              ? WellnessData.fromJson(
+                  Map<String, dynamic>.from(
+                    json['wellness'],
+                  ),
+                )
+              : null,
+
+      bioFactors:
+          (json['bio_factors'] as List?)
+                  ?.map(
+                    (item) => BioFactor.fromJson(
+                      Map<String, dynamic>.from(item),
+                    ),
+                  )
+                  .toList() ??
+              const [],
     );
   }
 
-  // ==========================================
-  // STRING ENCODING
-  // ==========================================
-
   String encode() {
-    return jsonEncode(
-      toJson(),
-    );
+    return jsonEncode(toJson());
   }
 
   static Measurement decode(

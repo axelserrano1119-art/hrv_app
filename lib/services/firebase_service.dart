@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/measurement.dart';
 import '../models/user.dart';
+import '../models/wellness_data.dart';
+import '../models/bio_factor.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore =
@@ -33,51 +35,93 @@ class FirebaseService {
   // SAVE MEASUREMENT
   // ==========================================
 
-  Future<void> saveMeasurement(
-      Measurement measurement) async {
+Future<void> saveMeasurement(
+    Measurement measurement) async {
 
-    // Make sure the student exists.
-    await _firestore
-        .collection('users')
-        .doc(measurement.userId)
-        .set({
-      'id': measurement.userId,
-      'name': measurement.userName,
-      'role': 'student',
-      'updatedAt': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+  await _firestore
+      .collection('users')
+      .doc(measurement.userId)
+      .set({
+    'id': measurement.userId,
+    'name': measurement.userName,
+    'role': 'student',
+    'updatedAt':
+        FieldValue.serverTimestamp(),
+  }, SetOptions(merge: true));
 
-    // Save measurement under the student.
-    await _firestore
-        .collection('users')
-        .doc(measurement.userId)
-        .collection('measurements')
-        .doc(measurement.id)
-        .set({
-      'id': measurement.id,
-      'userId': measurement.userId,
-      'userName': measurement.userName,
-      'timestamp': Timestamp.fromDate(
-        measurement.timestamp,
-      ),
-      'heartRate': measurement.heartRate,
-      'hrvRmssd': measurement.hrvRmssd,
-      'hrvSdnn': measurement.hrvSdnn,
-      'hrvPnn50': measurement.hrvPnn50,
-      'hrvSd1': measurement.hrvSd1,
-      'hrvSd2': measurement.hrvSd2,
-      'lfPower': measurement.lfPower,
-      'hfPower': measurement.hfPower,
-      'lfHfRatio': measurement.lfhfRatio,
-      'rrIntervals': measurement.rrIntervals,
-      'bpmHistory': measurement.bpmHistory,
-      'qualityScore': measurement.qualityScore,
-      'valid': measurement.valid,
-      'durationSeconds': measurement.durationSeconds,
-      'notes': measurement.notes,
-    });
-  }
+  await _firestore
+      .collection('users')
+      .doc(measurement.userId)
+      .collection('measurements')
+      .doc(measurement.id)
+      .set({
+    'id': measurement.id,
+    'userId': measurement.userId,
+    'userName': measurement.userName,
 
+    'timestamp':
+        Timestamp.fromDate(
+      measurement.timestamp,
+    ),
+
+    'heartRate':
+        measurement.heartRate,
+
+    'hrvRmssd':
+        measurement.hrvRmssd,
+
+    'hrvSdnn':
+        measurement.hrvSdnn,
+
+    'hrvPnn50':
+        measurement.hrvPnn50,
+
+    'hrvSd1':
+        measurement.hrvSd1,
+
+    'hrvSd2':
+        measurement.hrvSd2,
+
+    'lfPower':
+        measurement.lfPower,
+
+    'hfPower':
+        measurement.hfPower,
+
+    'lfHfRatio':
+        measurement.lfhfRatio,
+
+    'rrIntervals':
+        measurement.rrIntervals,
+
+    'bpmHistory':
+        measurement.bpmHistory,
+
+    'qualityScore':
+        measurement.qualityScore,
+
+    'valid':
+        measurement.valid,
+
+    'durationSeconds':
+        measurement.durationSeconds,
+
+    'notes':
+        measurement.notes,
+
+    // NEW
+    'wellness':
+        measurement.wellness?.toJson(),
+
+    'bioFactors':
+        measurement.bioFactors
+            .map(
+              (factor) =>
+                  factor.toJson(),
+            )
+            .toList(),
+  });
+}
   // ==========================================
   // GET ALL STUDENTS
   // ==========================================
@@ -158,6 +202,27 @@ class FirebaseService {
             data['durationSeconds'] ?? 45,
         notes:
             data['notes'],
+            wellness:
+    data['wellness'] != null
+        ? WellnessData.fromJson(
+            Map<String, dynamic>.from(
+              data['wellness'],
+            ),
+          )
+        : null,
+
+bioFactors:
+    (data['bioFactors'] as List?)
+            ?.map(
+              (item) =>
+                  BioFactor.fromJson(
+                Map<String, dynamic>.from(
+                  item,
+                ),
+              ),
+            )
+            .toList() ??
+        const [],
       );
     }).toList();
   }
