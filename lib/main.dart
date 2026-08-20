@@ -15,6 +15,7 @@ import 'services/statistics_service.dart';
 import 'services/rgb_extractor.dart';
 import 'login_page.dart';
 import 'services/measurement_storage.dart';
+import 'services/firebase_service.dart' as app_firebase;
 import 'pages/history_page.dart';
 import 'widgets/latest_measurement_card.dart';
 import 'services/measurement_events.dart';
@@ -989,9 +990,73 @@ final Measurement measurement = Measurement(
           : widget.bioFactors,
 );
 
-  await MeasurementStorage()
+  // ==========================================
+// SAVE MEASUREMENT LOCALLY
+// ==========================================
+
+await MeasurementStorage()
+    .saveMeasurement(measurement);
+
+// ==========================================
+// SAVE MEASUREMENT TO FIREBASE
+// ==========================================
+
+try {
+  await app_firebase.FirebaseService()
       .saveMeasurement(measurement);
-  Navigator.push(
+
+  debugPrint(
+    "================================",
+  );
+  debugPrint(
+    "FIREBASE SAVE SUCCESSFUL",
+  );
+  debugPrint(
+    "User ID: ${measurement.userId}",
+  );
+  debugPrint(
+    "User Name: ${measurement.userName}",
+  );
+  debugPrint(
+    "Heart Rate: ${measurement.heartRate}",
+  );
+  debugPrint(
+    "HRV: ${measurement.hrvRmssd}",
+  );
+  debugPrint(
+    "================================",
+  );
+} catch (e) {
+  debugPrint(
+    "================================",
+  );
+  debugPrint(
+    "FIREBASE SAVE FAILED",
+  );
+  debugPrint(
+    "Error: $e",
+  );
+  debugPrint(
+    "================================",
+  );
+
+  if (mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Measurement saved locally, "
+          "but Firebase upload failed: $e",
+        ),
+      ),
+    );
+  }
+}
+
+// ==========================================
+// OPEN RESULTS
+// ==========================================
+
+Navigator.push(
   context,
   MaterialPageRoute(
     builder: (_) => ResultsPage(

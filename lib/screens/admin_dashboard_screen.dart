@@ -16,6 +16,7 @@ import '../models/user.dart';
 import '../models/measurement.dart';
 import '../instructions_page.dart';
 
+
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
 
@@ -82,7 +83,154 @@ class _AdminDashboardScreenState
     _loadStudents();
     _loadAdminMeasurements();
   }
+  
+Future<void> _showCreateClassDialog() async {
+  final classNameController = TextEditingController();
+  final classCodeController = TextEditingController();
 
+  final result = await showDialog<bool>(
+    context: context,
+    barrierDismissible: false,
+    builder: (dialogContext) {
+      bool isCreating = false;
+
+      return StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: const Text('Create Class'),
+
+            content: SizedBox(
+              width: 400,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: classNameController,
+                    enabled: !isCreating,
+                    decoration: const InputDecoration(
+                      labelText: 'Class Name',
+                      hintText: 'Example: Biology 101',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  TextField(
+                    controller: classCodeController,
+                    enabled: !isCreating,
+                    textCapitalization:
+                        TextCapitalization.characters,
+                    decoration: const InputDecoration(
+                      labelText: 'Class Code',
+                      hintText: 'Example: BIO101',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            actions: [
+              TextButton(
+                onPressed: isCreating
+                    ? null
+                    : () {
+                        Navigator.of(dialogContext).pop(false);
+                      },
+                child: const Text('Cancel'),
+              ),
+
+              ElevatedButton(
+                onPressed: isCreating
+                    ? null
+                    : () async {
+                        final className =
+                            classNameController.text.trim();
+
+                        final classCode =
+                            classCodeController.text
+                                .trim()
+                                .toUpperCase();
+
+                        if (className.isEmpty ||
+                            classCode.isEmpty) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Please enter a class name and class code.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        setDialogState(() {
+                          isCreating = true;
+                        });
+
+                        try {
+                          await _firebaseService.createClass(
+                            adminId: 'admin',
+                            adminName: 'Administrator',
+                            className: className,
+                            classCode: classCode,
+                          );
+
+                          if (!context.mounted) return;
+
+                          Navigator.of(dialogContext).pop(true);
+                        } catch (e) {
+                          if (!context.mounted) return;
+
+                          setDialogState(() {
+                            isCreating = false;
+                          });
+
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                e.toString().replaceFirst(
+                                  'Exception: ',
+                                  '',
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                child: isCreating
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text('Create'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+
+  classNameController.dispose();
+  classCodeController.dispose();
+
+  if (result == true && mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Class created successfully.',
+        ),
+      ),
+    );
+  }
+}
   // ============================================================
   // LOAD STUDENTS
   // ============================================================
@@ -1364,59 +1512,75 @@ class _AdminDashboardScreenState
             height: 20,
           ),
 
-          // ======================================================
-          // ADMIN NAVIGATION
-          // ======================================================
+// ======================================================
+// ADMIN NAVIGATION
+// ======================================================
 
-          Wrap(
-            spacing: 12,
-            runSpacing: 10,
-            children: [
-              ElevatedButton.icon(
-                onPressed:
-                    _showAthletes,
-                icon:
-                    const Icon(
-                  Icons.people,
-                ),
-                label:
-                    const Text(
-                  'View Athletes',
-                ),
-              ),
+Wrap(
+  spacing: 12,
+  runSpacing: 10,
+  children: [
+    // ==================================================
+    // VIEW ATHLETES
+    // ==================================================
 
-              OutlinedButton.icon(
-                onPressed:
-                    _takeAdminMeasurement,
-                icon:
-                    const Icon(
-                  Icons.favorite,
-                ),
-                label:
-                    const Text(
-                  'Take My Own Measurement',
-                ),
-              ),
+    ElevatedButton.icon(
+      onPressed: _showAthletes,
+      icon: const Icon(
+        Icons.people,
+      ),
+      label: const Text(
+        'View Athletes',
+      ),
+    ),
 
-              OutlinedButton.icon(
-                onPressed:
-                    _loadAdminMeasurements,
-                icon:
-                    const Icon(
-                  Icons.refresh,
-                ),
-                label:
-                    const Text(
-                  'Refresh',
-                ),
-              ),
-            ],
-          ),
+    // ==================================================
+    // CREATE CLASS
+    // ==================================================
 
-          const SizedBox(
-            height: 24,
-          ),
+    ElevatedButton.icon(
+      onPressed: _showCreateClassDialog,
+      icon: const Icon(
+        Icons.add,
+      ),
+      label: const Text(
+        'Create Class',
+      ),
+    ),
 
+    // ==================================================
+    // TAKE ADMIN MEASUREMENT
+    // ==================================================
+
+    OutlinedButton.icon(
+      onPressed: _takeAdminMeasurement,
+      icon: const Icon(
+        Icons.favorite,
+      ),
+      label: const Text(
+        'Take My Own Measurement',
+      ),
+    ),
+
+    // ==================================================
+    // REFRESH
+    // ==================================================
+
+    OutlinedButton.icon(
+      onPressed: _loadAdminMeasurements,
+      icon: const Icon(
+        Icons.refresh,
+      ),
+      label: const Text(
+        'Refresh',
+      ),
+    ),
+  ],
+),
+
+const SizedBox(
+  height: 24,
+),
           // ======================================================
           // TIME RANGE
           // ======================================================
