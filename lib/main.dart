@@ -866,9 +866,108 @@ double calculateFinalBPM(List<double> values) {
   statisticsService.trimmedMean(
     _finalBpmHistory);
 
-  Measurement measurement = Measurement(
-  userId: Session.currentUser!.id,
-  userName: Session.currentUser!.name,
+// ==========================================
+// DETERMINE MEASUREMENT OWNER
+// ==========================================
+//
+// IMPORTANT:
+// If an admin is taking their own measurement,
+// ALWAYS use the currently logged-in admin's
+// Session identity.
+//
+// Do NOT use the selected student from the
+// admin dashboard.
+//
+// For normal student tests, use the userId
+// passed into CameraTestApp.
+
+late final String measurementUserId;
+late final String measurementUserName;
+
+if (widget.isAdmin) {
+  // ==========================================
+  // ADMIN'S OWN MEASUREMENT
+  // ==========================================
+
+  final admin = Session.currentUser;
+
+  if (admin == null) {
+    debugPrint(
+      "ERROR: No logged-in admin found.",
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Unable to save admin measurement: "
+            "no logged-in admin found.",
+          ),
+        ),
+      );
+    }
+
+    return;
+  }
+
+  measurementUserId = admin.id;
+  measurementUserName = admin.name;
+
+  debugPrint(
+    "================================",
+  );
+  debugPrint(
+    "ADMIN MEASUREMENT",
+  );
+  debugPrint(
+    "Admin ID: $measurementUserId",
+  );
+  debugPrint(
+    "Admin Name: $measurementUserName",
+  );
+  debugPrint(
+    "================================",
+  );
+} else {
+  // ==========================================
+  // NORMAL STUDENT MEASUREMENT
+  // ==========================================
+
+  measurementUserId =
+      widget.userId ??
+      Session.currentUser?.id ??
+      '';
+
+  measurementUserName =
+      widget.userName ??
+      Session.currentUser?.name ??
+      '';
+
+  debugPrint(
+    "================================",
+  );
+  debugPrint(
+    "STUDENT MEASUREMENT",
+  );
+  debugPrint(
+    "Student ID: $measurementUserId",
+  );
+  debugPrint(
+    "Student Name: $measurementUserName",
+  );
+  debugPrint(
+    "================================",
+  );
+}
+
+
+// ==========================================
+// CREATE MEASUREMENT
+// ==========================================
+
+final Measurement measurement = Measurement(
+  userId: measurementUserId,
+  userName: measurementUserName,
   timestamp: DateTime.now(),
   heartRate: finalBPM,
   hrvRmssd: hrv,
@@ -877,9 +976,18 @@ double calculateFinalBPM(List<double> values) {
   durationSeconds: 45,
   valid: true,
 
-  wellness: widget.wellness,
-  bioFactors: widget.bioFactors,
-  );
+  // Admin measurements should not inherit
+  // a student's wellness information.
+  wellness:
+      widget.isAdmin
+          ? null
+          : widget.wellness,
+
+  bioFactors:
+      widget.isAdmin
+          ? const []
+          : widget.bioFactors,
+);
 
   await MeasurementStorage()
       .saveMeasurement(measurement);

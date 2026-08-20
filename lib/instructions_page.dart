@@ -35,9 +35,24 @@ class InstructionsPage extends StatelessWidget {
           builder: (context) =>
               CameraTestApp(
             cameras: cameras,
+
+            // ==========================================
+            // USER IDENTITY
+            // ==========================================
+
             userId: userId,
             userName: userName,
+
+            // ==========================================
+            // ADMIN STATUS
+            // ==========================================
+
             isAdmin: isAdmin,
+
+            // ==========================================
+            // STUDENT DATA
+            // ==========================================
+
             wellness: wellness,
             bioFactors: bioFactors,
           ),
