@@ -84,6 +84,8 @@ class CameraTestApp extends StatefulWidget {
 
 class _CameraTestAppState extends State<CameraTestApp> {
 
+static const int _testDurationSeconds = 60;
+
  final HrvService hrvService = HrvService();
  double _lastHRV = 0;
  final StatisticsService statisticsService =
@@ -98,7 +100,7 @@ class _CameraTestAppState extends State<CameraTestApp> {
 
  CameraController? _controller;
  bool _isRecording = false;
- int _secondsRemaining = 45;
+ int _secondsRemaining = _testDurationSeconds;
  Timer? _countdownTimer;
 
 
@@ -214,7 +216,7 @@ _bpmHistory.clear();
    
      setState(() {
        _isRecording = true;
-       _secondsRemaining = 45;
+       _secondsRemaining = _testDurationSeconds;
      });
 
 
@@ -974,7 +976,7 @@ final Measurement measurement = Measurement(
   hrvRmssd: hrv,
   rrIntervals: rrIntervals,
   bpmHistory: _finalBpmHistory,
-  durationSeconds: 45,
+  durationSeconds: _testDurationSeconds,
   valid: true,
 
   // Admin measurements should not inherit
@@ -1101,7 +1103,7 @@ Navigator.push(
     _currentBPM = finalBPM;
 
     _isRecording = false;
-    _secondsRemaining = 45;
+    _secondsRemaining = _testDurationSeconds;
 
   });
 
@@ -1182,7 +1184,8 @@ Widget build(BuildContext context) {
 
 
                   LinearProgressIndicator(
-                    value: _secondsRemaining / 45,
+                    value: (_secondsRemaining / _testDurationSeconds)
+                        .clamp(0.0, 1.0),
                   ),
 
 
