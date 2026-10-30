@@ -22,8 +22,8 @@ import 'services/measurement_events.dart';
 import 'widgets/history_dashboard.dart';
 import 'pages/results_page.dart';
 import 'services/session.dart';
-import 'models/wellness_data.dart';
-import 'models/bio_factor.dart';
+//import 'models/wellness_data.dart';
+//import 'models/bio_factor.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,8 +49,8 @@ class CameraTestApp extends StatefulWidget {
  final String? userId;
  final String? userName;
  final bool isAdmin;
- final WellnessData? wellness;
- final List<BioFactor> bioFactors;
+ //final WellnessData? wellness;
+ // final List<BioFactor> bioFactors;
 
 
  const CameraTestApp({
@@ -65,9 +65,9 @@ class CameraTestApp extends StatefulWidget {
 
  this.isAdmin = false,
 
- this.wellness, 
+// this.wellness, 
 
- this.bioFactors = const [],
+// this.bioFactors = const [],
 
  });
 
@@ -981,15 +981,15 @@ final Measurement measurement = Measurement(
 
   // Admin measurements should not inherit
   // a student's wellness information.
-  wellness:
-      widget.isAdmin
-          ? null
-          : widget.wellness,
+  //wellness:
+     // widget.isAdmin
+      //    ? null
+      //    : widget.wellness,
 
-  bioFactors:
-      widget.isAdmin
-          ? const []
-          : widget.bioFactors,
+  //bioFactors:
+   //   widget.isAdmin
+   //       ? const []
+   //       : widget.bioFactors,
 );
 
   // ==========================================

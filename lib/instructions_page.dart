@@ -53,8 +53,8 @@ class InstructionsPage extends StatelessWidget {
             // STUDENT DATA
             // ==========================================
 
-            wellness: wellness,
-            bioFactors: bioFactors,
+            //wellness: wellness,
+            //bioFactors: bioFactors,
           ),
         ),
       );
